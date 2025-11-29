@@ -16,4 +16,6 @@ dependencies = [
     "unstructured",
     "tiktoken",
     "streamlit",
+    "pinecone",
+    "python-dotenv>=1.2.1",
 ]

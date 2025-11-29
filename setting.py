@@ -1,38 +1,8 @@
 import streamlit as st
-from utils import start_crawling,generate_database,set_openai_api_key
+from utils import start_crawling,set_openai_api_key,generate_pinecone_database
 
-# Custom styling for polished UI
-st.markdown("""
-    <style>
-    .main-header {
-        font-size: 2rem;
-        font-weight: 600;
-        color: #1a1a1a;
-        margin-bottom: 0.5rem;
-    }
-    .sub-header {
-        color: #666;
-        font-size: 0.95rem;
-        margin-bottom: 2rem;
-    }
-    .stButton>button {
-        border-radius: 6px;
-        padding: 0.5rem 2rem;
-        font-weight: 500;
-        transition: all 0.3s;
-    }
-    .metric-card {
-        background-color: #f8f9fa;
-        padding: 1rem;
-        border-radius: 8px;
-        border-left: 3px solid #0066cc;
-    }
-    </style>
-""", unsafe_allow_html=True)
-
-# Header
-st.markdown('<div class="main-header">Website Scraper</div>', unsafe_allow_html=True)
-st.markdown('<div class="sub-header">Crawl your website and build a searchable knowledge base</div>', unsafe_allow_html=True)
+st.title("Website Scraper")
+st.caption("Crawl your website and build a searchable knowledge base")
 
 # Sidebar
 with st.sidebar:
@@ -118,7 +88,7 @@ if user_api_key:
                         
                         # Generate database
                         with st.spinner("Building knowledge base..."):
-                            generate_database(scrapped_urls)
+                           generate_pinecone_database(scrapped_urls)
                         
                         st.success("Knowledge base is ready!")
                     else:
