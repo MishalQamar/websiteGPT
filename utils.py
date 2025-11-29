@@ -1,6 +1,13 @@
 import requests
 from bs4 import BeautifulSoup
 from urllib.parse import urljoin,urlparse
+from langchain_community.document_loaders import UnstructuredURLLoader
+from langchain_text_splitters import RecursiveCharacterTextSplitter
+from langchain_openai import OpenAIEmbeddings
+from langchain_community.vectorstores import FAISS
+import streamlit as st
+import os
+
 
 def start_crawling(url,prefix,depth):
     visited_urls=set()
@@ -29,3 +36,24 @@ def start_crawling(url,prefix,depth):
             print(f"Error crawling {url}: {e}")
     crawl_urls(url,prefix,depth)
     return list(sorted(wanted_urls))  
+
+
+def set_openai_api_key(api_key):
+    if not st.session_state.get("openai_api_key"):
+        st.error("Please set your OpenAI API key in the sidebar.")
+        st.stop()
+    
+    os.environ["OPENAI_API_KEY"]=st.session_state.openai_api_key
+
+
+
+
+def generate_database(urls):
+    loaders = UnstructuredURLLoader(urls=urls)
+    data = loaders.load()
+    text_splitter= RecursiveCharacterTextSplitter(chunk_size=1000,chunk_overlap=200)
+    docs = text_splitter.split_documents(data)
+    embeddings = OpenAIEmbeddings()
+    db = FAISS.from_documents(docs,embeddings)
+    db.save_local("faiss_index")
+    return db
